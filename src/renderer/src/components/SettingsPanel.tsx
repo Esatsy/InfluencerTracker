@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  X, Building2, Tags, Columns3, Palette, Plus, Check,
-  Sun, Moon, Monitor, RotateCcw
-} from 'lucide-react'
+import { Icon } from '@iconify/react'
 import { useSettings, useUpdateSettings } from '../hooks/useSettings'
 import { ALL_COLUMNS, DEFAULT_CATEGORIES, AGENCY_TYPES } from '../types/settings'
 import type { AppSettings } from '../types/settings'
@@ -17,11 +14,17 @@ interface SettingsPanelProps {
 
 type Tab = 'agency' | 'categories' | 'columns' | 'theme'
 
-const TABS: { id: Tab; label: string; icon: typeof Building2 }[] = [
-  { id: 'agency', label: 'Ajans', icon: Building2 },
-  { id: 'categories', label: 'Kategoriler', icon: Tags },
-  { id: 'columns', label: 'Tablo', icon: Columns3 },
-  { id: 'theme', label: 'Gorunum', icon: Palette }
+const TABS: { id: Tab; label: string; icon: string }[] = [
+  { id: 'agency', label: 'Ajans', icon: 'solar:buildings-bold-duotone' },
+  { id: 'categories', label: 'Kategoriler', icon: 'solar:tag-bold-duotone' },
+  { id: 'columns', label: 'Tablo', icon: 'solar:widget-5-bold-duotone' },
+  { id: 'theme', label: 'Gorunum', icon: 'solar:palette-bold-duotone' }
+]
+
+const THEME_OPTIONS: { id: 'system' | 'light' | 'dark'; label: string; icon: string }[] = [
+  { id: 'system', label: 'Sistem', icon: 'solar:monitor-bold-duotone' },
+  { id: 'light', label: 'Acik', icon: 'solar:sun-bold-duotone' },
+  { id: 'dark', label: 'Koyu', icon: 'solar:moon-bold-duotone' }
 ]
 
 export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
@@ -113,7 +116,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                 onClick={onClose}
                 className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
-                <X size={18} className="text-gray-400" />
+                <Icon icon="solar:close-circle-bold-duotone" width={18} className="text-gray-400" />
               </motion.button>
             </div>
 
@@ -129,7 +132,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                       : 'text-gray-400 border-transparent hover:text-gray-600 dark:hover:text-gray-300'
                   )}
                 >
-                  <t.icon size={14} />
+                  <Icon icon={t.icon} width={14} />
                   {t.label}
                 </button>
               ))}
@@ -180,7 +183,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                         onClick={() => update('categories', [...DEFAULT_CATEGORIES])}
                         className="text-2xs text-indigo-500 hover:text-indigo-600 flex items-center gap-1"
                       >
-                        <RotateCcw size={10} /> Varsayilana don
+                        <Icon icon="solar:restart-bold-duotone" width={10} /> Varsayilana don
                       </button>
                     </div>
                     <div className="flex gap-2 mb-3">
@@ -192,13 +195,17 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                         className="input flex-1"
                         placeholder="Yeni kategori..."
                       />
-                      <button onClick={() => addTag('categories', newCat, () => setNewCat(''))} disabled={!newCat.trim()} className="btn-primary btn-sm"><Plus size={14} /></button>
+                      <button onClick={() => addTag('categories', newCat, () => setNewCat(''))} disabled={!newCat.trim()} className="btn-primary btn-sm">
+                        <Icon icon="solar:add-circle-bold-duotone" width={14} />
+                      </button>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {(local.categories || []).map((c) => (
                         <span key={c} className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/30 font-medium">
                           {c}
-                          <button onClick={() => removeTag('categories', c)} className="p-0.5 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900/50"><X size={10} /></button>
+                          <button onClick={() => removeTag('categories', c)} className="p-0.5 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900/50">
+                            <Icon icon="solar:close-circle-bold-duotone" width={10} />
+                          </button>
                         </span>
                       ))}
                     </div>
@@ -214,13 +221,17 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                         className="input flex-1"
                         placeholder="Yeni KUYD..."
                       />
-                      <button onClick={() => addTag('kuyd_options', newKuyd, () => setNewKuyd(''))} disabled={!newKuyd.trim()} className="btn-primary btn-sm"><Plus size={14} /></button>
+                      <button onClick={() => addTag('kuyd_options', newKuyd, () => setNewKuyd(''))} disabled={!newKuyd.trim()} className="btn-primary btn-sm">
+                        <Icon icon="solar:add-circle-bold-duotone" width={14} />
+                      </button>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {(local.kuyd_options || []).map((k) => (
                         <span key={k} className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border border-amber-100 dark:border-amber-900/30 font-medium">
                           {k}
-                          <button onClick={() => removeTag('kuyd_options', k)} className="p-0.5 rounded hover:bg-amber-100 dark:hover:bg-amber-900/50"><X size={10} /></button>
+                          <button onClick={() => removeTag('kuyd_options', k)} className="p-0.5 rounded hover:bg-amber-100 dark:hover:bg-amber-900/50">
+                            <Icon icon="solar:close-circle-bold-duotone" width={10} />
+                          </button>
                         </span>
                       ))}
                     </div>
@@ -236,13 +247,17 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                         className="input flex-1"
                         placeholder="Yeni proje..."
                       />
-                      <button onClick={() => addTag('projects', newProject, () => setNewProject(''))} disabled={!newProject.trim()} className="btn-primary btn-sm"><Plus size={14} /></button>
+                      <button onClick={() => addTag('projects', newProject, () => setNewProject(''))} disabled={!newProject.trim()} className="btn-primary btn-sm">
+                        <Icon icon="solar:add-circle-bold-duotone" width={14} />
+                      </button>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {(local.projects || []).map((p) => (
                         <span key={p} className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/30 font-medium">
                           {p}
-                          <button onClick={() => removeTag('projects', p)} className="p-0.5 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/50"><X size={10} /></button>
+                          <button onClick={() => removeTag('projects', p)} className="p-0.5 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/50">
+                            <Icon icon="solar:close-circle-bold-duotone" width={10} />
+                          </button>
                         </span>
                       ))}
                     </div>
@@ -271,7 +286,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                             )}
                           >
                             <div className={cn('w-4 h-4 rounded border-2 flex items-center justify-center shrink-0', active ? 'bg-indigo-500 border-indigo-500' : 'border-gray-300 dark:border-gray-600')}>
-                              {active && <Check size={10} className="text-white" />}
+                              {active && <Icon icon="solar:check-read-bold-duotone" width={10} className="text-white" />}
                             </div>
                             <span className="font-medium text-gray-700 dark:text-gray-300">{col.label}</span>
                             {isRequired && <span className="text-2xs text-gray-400 ml-auto">Zorunlu</span>}
@@ -303,11 +318,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
               {tab === 'theme' && (
                 <div className="grid grid-cols-3 gap-3">
-                  {([
-                    { id: 'system' as const, label: 'Sistem', icon: Monitor },
-                    { id: 'light' as const, label: 'Acik', icon: Sun },
-                    { id: 'dark' as const, label: 'Koyu', icon: Moon }
-                  ]).map((t) => (
+                  {THEME_OPTIONS.map((t) => (
                     <button
                       key={t.id}
                       type="button"
@@ -318,7 +329,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                       )}
                     >
                       <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center', local.theme === t.id ? 'bg-indigo-100 dark:bg-indigo-900/40' : 'bg-gray-100 dark:bg-gray-700')}>
-                        <t.icon size={22} className={local.theme === t.id ? 'text-indigo-500' : 'text-gray-400'} />
+                        <Icon icon={t.icon} width={22} className={local.theme === t.id ? 'text-indigo-500' : 'text-gray-400'} />
                       </div>
                       <p className="text-xs font-semibold text-gray-900 dark:text-white">{t.label}</p>
                     </button>

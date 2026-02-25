@@ -256,3 +256,167 @@
   background: rgba(99, 102, 241, 0.2);
   color: inherit;
 }
+
+/* === Beam animation for vertical dividers === */
+@keyframes beam {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 0% 200%; }
+}
+
+.beam-line {
+  position: relative;
+  overflow: hidden;
+}
+.beam-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(99, 102, 241, 0.4) 40%,
+    rgba(139, 92, 246, 0.6) 50%,
+    rgba(99, 102, 241, 0.4) 60%,
+    transparent 100%
+  );
+  background-size: 100% 200%;
+  animation: beam 2.5s ease-in-out infinite;
+}
+.dark .beam-line::after {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(129, 140, 248, 0.3) 40%,
+    rgba(167, 139, 250, 0.5) 50%,
+    rgba(129, 140, 248, 0.3) 60%,
+    transparent 100%
+  );
+  background-size: 100% 200%;
+  animation: beam 2.5s ease-in-out infinite;
+}
+
+/* === Sonar animation === */
+@keyframes sonar {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes sonar-subtle {
+  0% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.sonar {
+  position: relative;
+}
+.sonar::before,
+.sonar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid currentColor;
+  opacity: 0;
+  animation: sonar 2s ease-out infinite;
+  pointer-events: none;
+}
+.sonar::after {
+  animation-delay: 0.8s;
+}
+
+.sonar-dot {
+  position: relative;
+}
+.sonar-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  border: 1.5px solid currentColor;
+  opacity: 0;
+  animation: sonar-subtle 2s ease-out infinite;
+  pointer-events: none;
+}
+
+/* === Flashlight / mouse glow effect === */
+.flashlight {
+  position: relative;
+}
+.flashlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  background: radial-gradient(
+    400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(99, 102, 241, 0.06),
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+.flashlight:hover::before {
+  opacity: 1;
+}
+
+.flashlight-border {
+  position: relative;
+}
+.flashlight-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  background: radial-gradient(
+    300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(99, 102, 241, 0.15),
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 0;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+}
+.flashlight-border:hover::after {
+  opacity: 1;
+}
+
+.dark .flashlight::before {
+  background: radial-gradient(
+    400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(129, 140, 248, 0.08),
+    transparent 60%
+  );
+}
+.dark .flashlight-border::after {
+  background: radial-gradient(
+    300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(129, 140, 248, 0.2),
+    transparent 60%
+  );
+}
+
+/* === Gradient text utility === */
+.gradient-text {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

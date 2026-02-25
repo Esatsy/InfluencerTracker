@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Sparkles, Plus, Upload, ArrowRight } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import { useImportExcel } from '../hooks/useInfluencers'
 import toast from 'react-hot-toast'
 
@@ -36,9 +36,9 @@ export function Welcome({ onAddClick }: WelcomeProps) {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.2 }}
-          className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mb-6"
+          className="sonar mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mb-6 text-indigo-300"
         >
-          <Sparkles size={36} className="text-white" />
+          <Icon icon="solar:graph-up-linear" width={36} className="text-white" />
         </motion.div>
 
         <motion.h1
@@ -73,9 +73,9 @@ export function Welcome({ onAddClick }: WelcomeProps) {
             onClick={onAddClick}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-shadow"
           >
-            <Plus size={18} />
+            <Icon icon="solar:add-circle-bold-duotone" width={18} />
             Influencer Ekle
-            <ArrowRight size={16} />
+            <Icon icon="solar:arrow-right-bold-duotone" width={16} />
           </motion.button>
 
           <motion.button
@@ -84,7 +84,7 @@ export function Welcome({ onAddClick }: WelcomeProps) {
             onClick={() => fileRef.current?.click()}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold text-sm border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
           >
-            <Upload size={18} />
+            <Icon icon="solar:upload-bold-duotone" width={18} />
             Excel Import
           </motion.button>
         </motion.div>

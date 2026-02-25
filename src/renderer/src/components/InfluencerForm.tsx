@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Instagram, MonitorPlay, Youtube } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import type { Influencer } from '../types/influencer'
 import type { AppSettings } from '../types/settings'
 import { parseCategories } from '../lib/utils'
 import { useCreateInfluencer, useUpdateInfluencer } from '../hooks/useInfluencers'
+import { useMouseGlow } from '../hooks/useMouseGlow'
 import toast from 'react-hot-toast'
 
 interface InfluencerFormProps {
@@ -64,6 +65,7 @@ export function InfluencerForm({ influencer, open, onClose, settings }: Influenc
   const create = useCreateInfluencer()
   const update = useUpdateInfluencer()
   const isEdit = !!influencer
+  const glow = useMouseGlow()
 
   useEffect(() => {
     if (influencer) {
@@ -148,7 +150,8 @@ export function InfluencerForm({ influencer, open, onClose, settings }: Influenc
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl shadow-black/10 dark:shadow-black/40 border border-white/20 dark:border-gray-700/50 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
+            {...glow}
+            className="flashlight flashlight-border bg-white dark:bg-gray-900 rounded-2xl shadow-2xl shadow-black/10 dark:shadow-black/40 border border-white/20 dark:border-gray-700/50 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
               <div>
@@ -165,7 +168,7 @@ export function InfluencerForm({ influencer, open, onClose, settings }: Influenc
                 onClick={onClose}
                 className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
-                <X size={18} className="text-gray-400" />
+                <Icon icon="solar:close-circle-bold-duotone" width={18} className="text-gray-400" />
               </motion.button>
             </div>
 
@@ -189,7 +192,7 @@ export function InfluencerForm({ influencer, open, onClose, settings }: Influenc
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="relative">
-                    <Instagram size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-400" />
+                    <Icon icon="simple-icons:instagram" width={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-400" />
                     <input
                       type="text"
                       value={form.instagram_username}
@@ -199,7 +202,7 @@ export function InfluencerForm({ influencer, open, onClose, settings }: Influenc
                     />
                   </div>
                   <div className="relative">
-                    <MonitorPlay size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-teal-400" />
+                    <Icon icon="simple-icons:tiktok" width={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-teal-400" />
                     <input
                       type="text"
                       value={form.tiktok_username}
@@ -209,7 +212,7 @@ export function InfluencerForm({ influencer, open, onClose, settings }: Influenc
                     />
                   </div>
                   <div className="relative">
-                    <Youtube size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400" />
+                    <Icon icon="simple-icons:youtube" width={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400" />
                     <input
                       type="text"
                       value={form.youtube_username}

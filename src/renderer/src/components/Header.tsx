@@ -1,15 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Download,
-  Upload,
-  RefreshCw,
-  Plus,
-  Moon,
-  Sun,
-  Sparkles,
-  Settings
-} from 'lucide-react'
+import { Icon } from '@iconify/react'
 import { api } from '../lib/api'
 import { useScrapeAll, useImportExcel } from '../hooks/useInfluencers'
 import type { AppSettings } from '../types/settings'
@@ -22,6 +13,8 @@ interface HeaderProps {
   settings: AppSettings
 }
 
+const CYCLING_WORDS = ['takipci', 'etkilesim', 'kampanya']
+
 export function Header({ onAddClick, influencerCount, onSettingsClick, settings }: HeaderProps) {
   const [dark, setDark] = useState(() => {
     const saved = localStorage.getItem('theme')
@@ -29,11 +22,19 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
     return window.matchMedia('(prefers-color-scheme: dark)').matches
   })
   const [scraping, setScraping] = useState(false)
+  const [wordIdx, setWordIdx] = useState(0)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
     localStorage.setItem('theme', dark ? 'dark' : 'light')
   }, [dark])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIdx((i) => (i + 1) % CYCLING_WORDS.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
 
   const fileRef = useRef<HTMLInputElement>(null)
   const scrapeAll = useScrapeAll()
@@ -96,24 +97,32 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <motion.div
-            whileHover={{ scale: 1.05, rotate: 2 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20"
+            className="sonar relative w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-indigo-300"
           >
-            <Sparkles size={18} className="text-white" />
+            <Icon icon="solar:graph-up-linear" width={18} className="text-white" />
           </motion.div>
           <div>
-            <h1 className="text-sm font-bold text-gray-900 dark:text-white leading-none tracking-tight">
-              {settings.agency_name || 'Influencer Tracker'}
+            <h1 className="text-sm font-extrabold leading-none tracking-tighter">
+              <span className="gradient-text">
+                {settings.agency_name || 'IT'}
+              </span>
             </h1>
-            <motion.span
-              key={influencerCount}
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-[11px] text-gray-400 dark:text-gray-500 font-medium"
-            >
-              {influencerCount} influencer
-            </motion.span>
+            <div className="flex items-center gap-1 text-[11px] text-gray-400 dark:text-gray-500 font-medium h-4 overflow-hidden">
+              <span>{influencerCount}</span>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={CYCLING_WORDS[wordIdx]}
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -10, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {CYCLING_WORDS[wordIdx]}
+                </motion.span>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
@@ -125,7 +134,7 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
             className="btn-primary btn-sm"
             title="Yeni Ekle"
           >
-            <Plus size={14} />
+            <Icon icon="solar:add-circle-bold-duotone" width={16} />
             <span className="hidden sm:inline">Ekle</span>
           </motion.button>
 
@@ -137,7 +146,11 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
             className="btn-secondary btn-sm"
             title="Tum Verileri Guncelle"
           >
-            <RefreshCw size={14} className={scraping ? 'animate-spin' : ''} />
+            <Icon
+              icon="solar:refresh-bold-duotone"
+              width={16}
+              className={scraping ? 'animate-spin' : ''}
+            />
             <span className="hidden sm:inline">
               {scraping ? 'Guncelleniyor...' : 'Guncelle'}
             </span>
@@ -150,7 +163,7 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
             className="btn-secondary btn-sm"
             title="Excel Export"
           >
-            <Download size={14} />
+            <Icon icon="solar:download-bold-duotone" width={16} />
             <span className="hidden sm:inline">Export</span>
           </motion.button>
 
@@ -161,7 +174,7 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
             className="btn-secondary btn-sm"
             title="Excel Import"
           >
-            <Upload size={14} />
+            <Icon icon="solar:upload-bold-duotone" width={16} />
             <span className="hidden sm:inline">Import</span>
           </motion.button>
 
@@ -173,7 +186,7 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
             onChange={handleImportFile}
           />
 
-          <div className="w-px h-5 bg-gray-200/60 dark:bg-gray-700/40 mx-1" />
+          <div className="w-px h-5 beam-line mx-1" />
 
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -182,7 +195,7 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
             className="btn-ghost btn-sm p-1.5"
             title="Ayarlar"
           >
-            <Settings size={15} />
+            <Icon icon="solar:settings-bold-duotone" width={17} />
           </motion.button>
 
           <motion.button
@@ -201,7 +214,7 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
                   exit={{ rotate: 90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Sun size={15} />
+                  <Icon icon="solar:sun-bold-duotone" width={17} />
                 </motion.div>
               ) : (
                 <motion.div
@@ -211,7 +224,7 @@ export function Header({ onAddClick, influencerCount, onSettingsClick, settings 
                   exit={{ rotate: -90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Moon size={15} />
+                  <Icon icon="solar:moon-bold-duotone" width={17} />
                 </motion.div>
               )}
             </AnimatePresence>

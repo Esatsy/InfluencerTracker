@@ -1,11 +1,6 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Sparkles, Building2, Globe, Tags, Columns3, Palette,
-  Upload, ChevronRight, ChevronLeft, Check, Plus, X,
-  Instagram, MonitorPlay, Youtube, Sun, Moon, Monitor,
-  GripVertical, ArrowRight
-} from 'lucide-react'
+import { Icon } from '@iconify/react'
 import { useUpdateSettings } from '../hooks/useSettings'
 import { useImportExcel } from '../hooks/useInfluencers'
 import {
@@ -34,16 +29,22 @@ interface WizardState {
   theme: 'system' | 'light' | 'dark'
 }
 
+const PLATFORM_BRAND_ICONS: Record<string, string> = {
+  instagram: 'simple-icons:instagram',
+  tiktok: 'simple-icons:tiktok',
+  youtube: 'simple-icons:youtube'
+}
+
 const STEPS = [
-  { id: 'welcome', icon: Sparkles, title: 'Hosgeldiniz' },
-  { id: 'agency', icon: Building2, title: 'Ajans Bilgileri' },
-  { id: 'platforms', icon: Globe, title: 'Platformlar' },
-  { id: 'categories', icon: Tags, title: 'Kategoriler' },
-  { id: 'kuyd', icon: Tags, title: 'KUYD & Projeler' },
-  { id: 'columns', icon: Columns3, title: 'Tablo Ayarlari' },
-  { id: 'theme', icon: Palette, title: 'Gorunum' },
-  { id: 'data', icon: Upload, title: 'Veri Aktarimi' },
-  { id: 'done', icon: Check, title: 'Tamamlandi' }
+  { id: 'welcome', icon: 'solar:graph-up-linear', title: 'Hosgeldiniz' },
+  { id: 'agency', icon: 'solar:buildings-bold-duotone', title: 'Ajans Bilgileri' },
+  { id: 'platforms', icon: 'solar:global-bold-duotone', title: 'Platformlar' },
+  { id: 'categories', icon: 'solar:tag-bold-duotone', title: 'Kategoriler' },
+  { id: 'kuyd', icon: 'solar:tag-bold-duotone', title: 'KUYD & Projeler' },
+  { id: 'columns', icon: 'solar:widget-5-bold-duotone', title: 'Tablo Ayarlari' },
+  { id: 'theme', icon: 'solar:palette-bold-duotone', title: 'Gorunum' },
+  { id: 'data', icon: 'solar:upload-bold-duotone', title: 'Veri Aktarimi' },
+  { id: 'done', icon: 'solar:check-circle-bold-duotone', title: 'Tamamlandi' }
 ]
 
 const slideVariants = {
@@ -111,7 +112,7 @@ function TagInput({
           disabled={!inputValue.trim()}
           className="btn-primary btn-sm px-3"
         >
-          <Plus size={14} />
+          <Icon icon="solar:add-circle-bold-duotone" width={14} />
         </motion.button>
       </div>
       <div className="flex flex-wrap gap-1.5 max-h-[180px] overflow-y-auto">
@@ -129,7 +130,7 @@ function TagInput({
                 onClick={() => onRemove(tag)}
                 className="p-0.5 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
               >
-                <X size={10} />
+                <Icon icon="solar:close-circle-bold-duotone" width={10} />
               </button>
             </motion.span>
           ))}
@@ -284,9 +285,9 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mb-6"
+              className="sonar mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mb-6 text-indigo-300"
             >
-              <Sparkles size={36} className="text-white" />
+              <Icon icon="solar:graph-up-linear" width={36} className="text-white" />
             </motion.div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight mb-3">
               Influencer Tracker
@@ -354,7 +355,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
             <div className="space-y-3">
               {PLATFORM_OPTIONS.map((p) => {
                 const active = state.platforms.includes(p.id)
-                const Icon = p.id === 'instagram' ? Instagram : p.id === 'youtube' ? Youtube : MonitorPlay
+                const brandIcon = PLATFORM_BRAND_ICONS[p.id] || 'solar:monitor-bold-duotone'
                 return (
                   <motion.button
                     key={p.id}
@@ -373,7 +374,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                       className="w-10 h-10 rounded-xl flex items-center justify-center"
                       style={{ backgroundColor: `${p.color}15` }}
                     >
-                      <Icon size={20} style={{ color: p.color }} />
+                      <Icon icon={brandIcon} width={20} style={{ color: p.color }} />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-gray-900 dark:text-white">{p.label}</p>
@@ -385,7 +386,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                         ? 'bg-indigo-500 border-indigo-500'
                         : 'border-gray-300 dark:border-gray-600'
                     )}>
-                      {active && <Check size={12} className="text-white" />}
+                      {active && <Icon icon="solar:check-read-bold-duotone" width={12} className="text-white" />}
                     </div>
                   </motion.button>
                 )
@@ -401,7 +402,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Kategori Yonetimi</h3>
               <p className="text-xs text-gray-400 mb-4">
                 Influencer'larinizi siniflandirmak icin kullanacaginiz kategorileri belirleyin.
-                Varsayilan kategoriler eklenmi&sacute;tir, dilediginizi ekleyip cikarabilirsiniz.
+                Varsayilan kategoriler eklenmistir, dilediginizi ekleyip cikarabilirsiniz.
               </p>
             </div>
             <TagInput
@@ -489,7 +490,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                           ? 'bg-indigo-500 border-indigo-500'
                           : 'border-gray-300 dark:border-gray-600'
                       )}>
-                        {active && <Check size={10} className="text-white" />}
+                        {active && <Icon icon="solar:check-read-bold-duotone" width={10} className="text-white" />}
                       </div>
                       <span className="font-medium text-gray-700 dark:text-gray-300">{col.label}</span>
                       {isRequired && (
@@ -539,9 +540,9 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
             </div>
             <div className="grid grid-cols-3 gap-3">
               {([
-                { id: 'system', label: 'Sistem', desc: 'Isletim sistemini takip et', icon: Monitor },
-                { id: 'light', label: 'Acik Tema', desc: 'Her zaman acik mod', icon: Sun },
-                { id: 'dark', label: 'Koyu Tema', desc: 'Her zaman koyu mod', icon: Moon }
+                { id: 'system', label: 'Sistem', desc: 'Isletim sistemini takip et', icon: 'solar:monitor-bold-duotone' },
+                { id: 'light', label: 'Acik Tema', desc: 'Her zaman acik mod', icon: 'solar:sun-bold-duotone' },
+                { id: 'dark', label: 'Koyu Tema', desc: 'Her zaman koyu mod', icon: 'solar:moon-bold-duotone' }
               ] as const).map((t) => (
                 <motion.button
                   key={t.id}
@@ -562,7 +563,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                       ? 'bg-indigo-100 dark:bg-indigo-900/40'
                       : 'bg-gray-100 dark:bg-gray-700'
                   )}>
-                    <t.icon size={22} className={state.theme === t.id ? 'text-indigo-500' : 'text-gray-400'} />
+                    <Icon icon={t.icon} width={22} className={state.theme === t.id ? 'text-indigo-500' : 'text-gray-400'} />
                   </div>
                   <div className="text-center">
                     <p className="text-xs font-semibold text-gray-900 dark:text-white">{t.label}</p>
@@ -592,7 +593,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               className="w-full flex flex-col items-center gap-3 px-6 py-8 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-500 bg-gray-50/50 dark:bg-gray-800/50 transition-all"
             >
               <div className="w-14 h-14 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
-                <Upload size={24} className="text-indigo-500" />
+                <Icon icon="solar:upload-bold-duotone" width={24} className="text-indigo-500" />
               </div>
               <div className="text-center">
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -623,7 +624,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-2xl shadow-emerald-500/30 mb-6"
             >
-              <Check size={36} className="text-white" />
+              <Icon icon="solar:check-circle-bold-duotone" width={36} className="text-white" />
             </motion.div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight mb-3">
               Her Sey Hazir!
@@ -705,7 +706,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               step === 0 && 'opacity-0 pointer-events-none'
             )}
           >
-            <ChevronLeft size={14} />
+            <Icon icon="solar:alt-arrow-left-bold-duotone" width={14} />
             Geri
           </motion.button>
 
@@ -718,7 +719,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               className="btn-primary btn-sm flex items-center gap-1.5 px-5"
             >
               {updateSettings.isPending ? 'Kaydediliyor...' : 'Basla'}
-              <ArrowRight size={14} />
+              <Icon icon="solar:arrow-right-bold-duotone" width={14} />
             </motion.button>
           ) : (
             <motion.button
@@ -728,7 +729,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
               className="btn-primary btn-sm flex items-center gap-1.5"
             >
               Devam
-              <ChevronRight size={14} />
+              <Icon icon="solar:alt-arrow-right-bold-duotone" width={14} />
             </motion.button>
           )}
         </div>

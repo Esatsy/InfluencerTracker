@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, X, Filter } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import type { AppSettings } from '../types/settings'
 
 interface FilterBarProps {
@@ -38,8 +38,9 @@ export function FilterBar({
       className="flex items-center gap-2.5 px-5 py-2.5 glass-subtle border-b border-white/10 dark:border-white/5"
     >
       <div className="relative flex-1 max-w-sm">
-        <Search
-          size={14}
+        <Icon
+          icon="solar:magnifer-bold-duotone"
+          width={15}
           className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
         />
         <input
@@ -58,14 +59,14 @@ export function FilterBar({
               onClick={() => onSearchChange('')}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
-              <X size={12} className="text-gray-400" />
+              <Icon icon="solar:close-circle-bold-duotone" width={14} className="text-gray-400" />
             </motion.button>
           )}
         </AnimatePresence>
       </div>
 
       <div className="flex items-center gap-1.5 text-gray-400">
-        <Filter size={13} />
+        <Icon icon="solar:filter-bold-duotone" width={15} />
       </div>
 
       <select
@@ -104,7 +105,7 @@ export function FilterBar({
             onClick={clearAll}
             className="btn-ghost btn-sm text-xs flex items-center gap-1 text-indigo-500 dark:text-indigo-400"
           >
-            <X size={12} />
+            <Icon icon="solar:close-circle-bold-duotone" width={14} />
             Temizle
             {activeCount > 1 && (
               <span className="ml-0.5 w-4 h-4 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold flex items-center justify-center">
