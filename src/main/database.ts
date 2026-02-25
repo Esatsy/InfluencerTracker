@@ -32,6 +32,46 @@ export interface InfluencerRow {
   updated_at: string
 }
 
+export interface AppSettings {
+  agency_name: string
+  agency_type: string
+  platforms: string[]
+  categories: string[]
+  kuyd_options: string[]
+  projects: string[]
+  visible_columns: string[]
+  table_density: 'compact' | 'comfortable' | 'spacious'
+  theme: 'system' | 'light' | 'dark'
+  currency: string
+  language: string
+  setup_completed: boolean
+}
+
+const DEFAULT_SETTINGS: AppSettings = {
+  agency_name: '',
+  agency_type: '',
+  platforms: ['instagram', 'tiktok', 'youtube'],
+  categories: [
+    'Fashion', 'Beauty', 'Lifestyle', 'Entertainment', 'Sports',
+    'Student', 'Kitchen', 'Art', 'Pet', 'Music', 'Travel',
+    'Technology', 'Food', 'Gaming', 'Fitness'
+  ],
+  kuyd_options: [
+    'İş Paola', 'Proje Oluştur', 'İşbirliklerine Odaklan', 'Sabiçöz Kalım'
+  ],
+  projects: [],
+  visible_columns: [
+    'name', 'instagram', 'ig_er', 'tiktok', 'youtube',
+    'categories', 'demographics', 'ages', 'tr_pct',
+    'kuyd', 'project', 'notes'
+  ],
+  table_density: 'compact',
+  theme: 'system',
+  currency: 'TRY',
+  language: 'tr',
+  setup_completed: false
+}
+
 export function initDatabase(): void {
   const userDataPath = app.getPath('userData')
   if (!existsSync(userDataPath)) mkdirSync(userDataPath, { recursive: true })
@@ -69,11 +109,52 @@ export function initDatabase(): void {
     )
   `)
 
-  // Migration: add ig_engagement_rate if missing (for existing databases)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    )
+  `)
+
   try {
     db.exec(`ALTER TABLE influencers ADD COLUMN ig_engagement_rate REAL DEFAULT 0`)
-  } catch {
-    /* column already exists */
+  } catch { /* column already exists */ }
+}
+
+export const settingsDB = {
+  getAll(): AppSettings {
+    const rows = db.prepare('SELECT key, value FROM settings').all() as { key: string; value: string }[]
+    const stored: Record<string, unknown> = {}
+    for (const row of rows) {
+      try { stored[row.key] = JSON.parse(row.value) } catch { stored[row.key] = row.value }
+    }
+    return { ...DEFAULT_SETTINGS, ...stored } as AppSettings
+  },
+
+  get(key: string): unknown {
+    const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key) as { value: string } | undefined
+    if (!row) return (DEFAULT_SETTINGS as Record<string, unknown>)[key]
+    try { return JSON.parse(row.value) } catch { return row.value }
+  },
+
+  set(key: string, value: unknown): void {
+    const serialized = typeof value === 'string' ? value : JSON.stringify(value)
+    db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run(key, serialized)
+  },
+
+  setMany(data: Record<string, unknown>): void {
+    const stmt = db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)')
+    const tx = db.transaction((items: [string, unknown][]) => {
+      for (const [key, value] of items) {
+        const serialized = typeof value === 'string' ? value : JSON.stringify(value)
+        stmt.run(key, serialized)
+      }
+    })
+    tx(Object.entries(data))
+  },
+
+  isSetupCompleted(): boolean {
+    return this.get('setup_completed') === true
   }
 }
 

@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Users, TrendingUp } from 'lucide-react'
 import type { Influencer } from '../types/influencer'
+import type { AppSettings } from '../types/settings'
 import { formatCount } from '../lib/utils'
 
 interface StatsBarProps {
   data: Influencer[]
+  settings: AppSettings
 }
 
 function useAnimatedNumber(target: number, duration = 600): number {
@@ -77,10 +79,12 @@ function StatCard({
   )
 }
 
-export function StatsBar({ data }: StatsBarProps) {
+export function StatsBar({ data, settings }: StatsBarProps) {
   const igAvg = avg(data.map((d) => d.instagram_followers))
   const ttAvg = avg(data.map((d) => d.tiktok_followers))
   const ytAvg = avg(data.map((d) => d.youtube_followers))
+
+  const platforms = settings.platforms || ['instagram', 'tiktok', 'youtube']
 
   return (
     <motion.div
@@ -97,28 +101,34 @@ export function StatsBar({ data }: StatsBarProps) {
         icon={<Users size={13} />}
         delay={0.1}
       />
-      <StatCard
-        label="Ort. IG"
-        value={formatCount(igAvg)}
-        rawValue={igAvg}
-        color="text-pink-600 dark:text-pink-400"
-        icon={<TrendingUp size={13} />}
-        delay={0.15}
-      />
-      <StatCard
-        label="Ort. TT"
-        value={formatCount(ttAvg)}
-        rawValue={ttAvg}
-        color="text-teal-500"
-        delay={0.2}
-      />
-      <StatCard
-        label="Ort. YT"
-        value={formatCount(ytAvg)}
-        rawValue={ytAvg}
-        color="text-red-500"
-        delay={0.25}
-      />
+      {platforms.includes('instagram') && (
+        <StatCard
+          label="Ort. IG"
+          value={formatCount(igAvg)}
+          rawValue={igAvg}
+          color="text-pink-600 dark:text-pink-400"
+          icon={<TrendingUp size={13} />}
+          delay={0.15}
+        />
+      )}
+      {platforms.includes('tiktok') && (
+        <StatCard
+          label="Ort. TT"
+          value={formatCount(ttAvg)}
+          rawValue={ttAvg}
+          color="text-teal-500"
+          delay={0.2}
+        />
+      )}
+      {platforms.includes('youtube') && (
+        <StatCard
+          label="Ort. YT"
+          value={formatCount(ytAvg)}
+          rawValue={ytAvg}
+          color="text-red-500"
+          delay={0.25}
+        />
+      )}
     </motion.div>
   )
 }

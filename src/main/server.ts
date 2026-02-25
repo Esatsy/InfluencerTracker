@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import multer from 'multer'
-import { database, type InfluencerRow } from './database'
+import { database, settingsDB, type InfluencerRow } from './database'
 import { scrapeInfluencer } from './scrapers'
 import { exportToExcel, importFromExcel } from './excel'
 
@@ -11,6 +11,21 @@ export function createServer(): express.Express {
   const app = express()
   app.use(cors())
   app.use(express.json())
+
+  // --- Settings ---
+
+  app.get('/api/settings', (_req, res) => {
+    res.json(settingsDB.getAll())
+  })
+
+  app.put('/api/settings', (req, res) => {
+    settingsDB.setMany(req.body)
+    res.json(settingsDB.getAll())
+  })
+
+  app.get('/api/settings/:key', (req, res) => {
+    res.json({ value: settingsDB.get(req.params.key) })
+  })
 
   // --- Influencer CRUD ---
 

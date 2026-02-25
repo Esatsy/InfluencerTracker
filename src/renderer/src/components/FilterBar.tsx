@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X, Filter } from 'lucide-react'
-import { CATEGORY_OPTIONS, KUYD_OPTIONS } from '../lib/utils'
+import type { AppSettings } from '../types/settings'
 
 interface FilterBarProps {
   search: string
@@ -9,6 +9,7 @@ interface FilterBarProps {
   onCategoryChange: (v: string) => void
   kuyd: string
   onKuydChange: (v: string) => void
+  settings: AppSettings
 }
 
 export function FilterBar({
@@ -17,7 +18,8 @@ export function FilterBar({
   category,
   onCategoryChange,
   kuyd,
-  onKuydChange
+  onKuydChange,
+  settings
 }: FilterBarProps) {
   const hasFilters = search || category || kuyd
   const activeCount = [search, category, kuyd].filter(Boolean).length
@@ -72,7 +74,7 @@ export function FilterBar({
         className="input w-auto py-1.5 text-xs pr-8"
       >
         <option value="">Tum Kategoriler</option>
-        {CATEGORY_OPTIONS.map((c) => (
+        {settings.categories.map((c) => (
           <option key={c} value={c}>
             {c}
           </option>
@@ -85,7 +87,7 @@ export function FilterBar({
         className="input w-auto py-1.5 text-xs pr-8"
       >
         <option value="">Tum KUYD</option>
-        {KUYD_OPTIONS.map((k) => (
+        {settings.kuyd_options.map((k) => (
           <option key={k} value={k}>
             {k}
           </option>

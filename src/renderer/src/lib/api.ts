@@ -1,4 +1,5 @@
 import type { Influencer } from '../types/influencer'
+import type { AppSettings } from '../types/settings'
 
 const BASE = 'http://localhost:3001'
 
@@ -18,6 +19,18 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  getSettings(): Promise<AppSettings> {
+    return request('/api/settings')
+  },
+
+  updateSettings(data: Partial<AppSettings>): Promise<AppSettings> {
+    return request('/api/settings', {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
+  },
+
+
   getInfluencers(params?: {
     search?: string
     category?: string

@@ -18,6 +18,7 @@ import {
   Sparkles
 } from 'lucide-react'
 import type { Influencer } from '../types/influencer'
+import type { AppSettings } from '../types/settings'
 import { formatCount, parseCategories, cn } from '../lib/utils'
 import { useScrapeInfluencer, useDeleteInfluencer } from '../hooks/useInfluencers'
 import toast from 'react-hot-toast'
@@ -26,6 +27,7 @@ interface InfluencerTableProps {
   data: Influencer[]
   onEdit: (inf: Influencer) => void
   isLoading: boolean
+  settings: AppSettings
 }
 
 function PlatformBadge({
@@ -89,7 +91,11 @@ function SkeletonRow() {
   )
 }
 
-export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProps) {
+export function InfluencerTable({ data, onEdit, isLoading, settings }: InfluencerTableProps) {
+  const visibleCols = settings.visible_columns || []
+  const density = settings.table_density || 'compact'
+  const densityPy = density === 'compact' ? 'py-1.5' : density === 'comfortable' ? 'py-2.5' : 'py-3.5'
+  const densityText = density === 'spacious' ? 'text-xs' : 'text-xs'
   const [sorting, setSorting] = useState<SortingState>([])
   const scrape = useScrapeInfluencer()
   const del = useDeleteInfluencer()
@@ -120,7 +126,8 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
   }
 
   const columns = useMemo<ColumnDef<Influencer>[]>(
-    () => [
+    () => {
+      const allCols: (ColumnDef<Influencer> & { colId?: string })[] = [
       {
         id: 'index',
         header: '#',
@@ -133,6 +140,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'name',
+        colId: 'name',
         header: 'Influencer',
         size: 160,
         cell: ({ getValue }) => (
@@ -143,6 +151,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'instagram_followers',
+        colId: 'instagram',
         header: 'Instagram',
         size: 95,
         cell: ({ getValue }) => (
@@ -151,6 +160,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'ig_engagement_rate',
+        colId: 'ig_er',
         header: 'ER%',
         size: 60,
         cell: ({ getValue }) => {
@@ -176,6 +186,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'tiktok_followers',
+        colId: 'tiktok',
         header: 'TikTok',
         size: 95,
         cell: ({ getValue }) => (
@@ -184,6 +195,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'youtube_followers',
+        colId: 'youtube',
         header: 'YouTube',
         size: 95,
         cell: ({ getValue }) => (
@@ -192,6 +204,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'categories',
+        colId: 'categories',
         header: 'Kategoriler',
         size: 180,
         enableSorting: false,
@@ -199,6 +212,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'women_pct',
+        colId: 'demographics',
         header: 'W%',
         size: 45,
         cell: ({ getValue }) => {
@@ -209,6 +223,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'men_pct',
+        colId: 'demographics_m',
         header: 'M%',
         size: 45,
         cell: ({ getValue }) => {
@@ -219,6 +234,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         id: 'demographics',
+        colId: 'ages',
         header: 'Yas Dagilimlari',
         size: 200,
         enableSorting: false,
@@ -253,6 +269,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'tr_pct',
+        colId: 'tr_pct',
         header: 'TR%',
         size: 55,
         cell: ({ getValue }) => {
@@ -276,6 +293,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'kuyd_category',
+        colId: 'kuyd',
         header: 'KUYD',
         size: 140,
         cell: ({ getValue }) => {
@@ -290,6 +308,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'project',
+        colId: 'project',
         header: 'Proje',
         size: 110,
         cell: ({ getValue }) => {
@@ -300,6 +319,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
       },
       {
         accessorKey: 'notes',
+        colId: 'notes',
         header: 'Not',
         size: 160,
         enableSorting: false,
@@ -353,8 +373,15 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
           </div>
         )
       }
-    ],
-    [scrapingId]
+    ]
+
+      return allCols.filter((col) => {
+        if (!col.colId) return true
+        if (col.colId === 'demographics_m') return visibleCols.includes('demographics')
+        return visibleCols.includes(col.colId)
+      })
+    },
+    [scrapingId, visibleCols]
   )
 
   const table = useReactTable({
@@ -463,7 +490,7 @@ export function InfluencerTable({ data, onEdit, isLoading }: InfluencerTableProp
                     {row.getVisibleCells().map((cell) => (
                       <td
                         key={cell.id}
-                        className="px-3 py-2 whitespace-nowrap"
+                        className={`px-3 ${densityPy} whitespace-nowrap`}
                         style={{ maxWidth: cell.column.getSize() }}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

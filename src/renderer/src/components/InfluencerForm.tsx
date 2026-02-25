@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Instagram, MonitorPlay, Youtube } from 'lucide-react'
 import type { Influencer } from '../types/influencer'
-import { CATEGORY_OPTIONS, KUYD_OPTIONS, parseCategories } from '../lib/utils'
+import type { AppSettings } from '../types/settings'
+import { parseCategories } from '../lib/utils'
 import { useCreateInfluencer, useUpdateInfluencer } from '../hooks/useInfluencers'
 import toast from 'react-hot-toast'
 
@@ -10,6 +11,7 @@ interface InfluencerFormProps {
   influencer: Influencer | null
   open: boolean
   onClose: () => void
+  settings: AppSettings
 }
 
 const defaultForm = {
@@ -57,7 +59,7 @@ const modalVariants = {
   }
 }
 
-export function InfluencerForm({ influencer, open, onClose }: InfluencerFormProps) {
+export function InfluencerForm({ influencer, open, onClose, settings }: InfluencerFormProps) {
   const [form, setForm] = useState<FormData>(defaultForm)
   const create = useCreateInfluencer()
   const update = useUpdateInfluencer()
@@ -261,7 +263,7 @@ export function InfluencerForm({ influencer, open, onClose }: InfluencerFormProp
               <div>
                 <label className="label">Kategoriler</label>
                 <div className="flex flex-wrap gap-1.5">
-                  {CATEGORY_OPTIONS.map((cat) => (
+                  {settings.categories.map((cat) => (
                     <motion.button
                       key={cat}
                       type="button"
@@ -354,7 +356,7 @@ export function InfluencerForm({ influencer, open, onClose }: InfluencerFormProp
                     className="input"
                   >
                     <option value="">Sec...</option>
-                    {KUYD_OPTIONS.map((k) => (
+                    {settings.kuyd_options.map((k) => (
                       <option key={k} value={k}>
                         {k}
                       </option>
@@ -363,13 +365,26 @@ export function InfluencerForm({ influencer, open, onClose }: InfluencerFormProp
                 </div>
                 <div>
                   <label className="label">Proje</label>
-                  <input
-                    type="text"
-                    value={form.project}
-                    onChange={(e) => set('project', e.target.value)}
-                    className="input"
-                    placeholder="Proje adi"
-                  />
+                  {settings.projects && settings.projects.length > 0 ? (
+                    <select
+                      value={form.project}
+                      onChange={(e) => set('project', e.target.value)}
+                      className="input"
+                    >
+                      <option value="">Sec...</option>
+                      {settings.projects.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={form.project}
+                      onChange={(e) => set('project', e.target.value)}
+                      className="input"
+                      placeholder="Proje adi"
+                    />
+                  )}
                 </div>
               </div>
 

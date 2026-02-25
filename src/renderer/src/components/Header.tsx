@@ -7,18 +7,22 @@ import {
   Plus,
   Moon,
   Sun,
-  Sparkles
+  Sparkles,
+  Settings
 } from 'lucide-react'
 import { api } from '../lib/api'
 import { useScrapeAll, useImportExcel } from '../hooks/useInfluencers'
+import type { AppSettings } from '../types/settings'
 import toast from 'react-hot-toast'
 
 interface HeaderProps {
   onAddClick: () => void
   influencerCount: number
+  onSettingsClick: () => void
+  settings: AppSettings
 }
 
-export function Header({ onAddClick, influencerCount }: HeaderProps) {
+export function Header({ onAddClick, influencerCount, onSettingsClick, settings }: HeaderProps) {
   const [dark, setDark] = useState(() => {
     const saved = localStorage.getItem('theme')
     if (saved) return saved === 'dark'
@@ -100,7 +104,7 @@ export function Header({ onAddClick, influencerCount }: HeaderProps) {
           </motion.div>
           <div>
             <h1 className="text-sm font-bold text-gray-900 dark:text-white leading-none tracking-tight">
-              Influencer Tracker
+              {settings.agency_name || 'Influencer Tracker'}
             </h1>
             <motion.span
               key={influencerCount}
@@ -170,6 +174,16 @@ export function Header({ onAddClick, influencerCount }: HeaderProps) {
           />
 
           <div className="w-px h-5 bg-gray-200/60 dark:bg-gray-700/40 mx-1" />
+
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onSettingsClick}
+            className="btn-ghost btn-sm p-1.5"
+            title="Ayarlar"
+          >
+            <Settings size={15} />
+          </motion.button>
 
           <motion.button
             whileHover={{ scale: 1.1, rotate: 15 }}
