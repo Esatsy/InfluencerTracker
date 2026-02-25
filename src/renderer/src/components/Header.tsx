@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Download,
   Upload,
@@ -6,10 +7,11 @@ import {
   Plus,
   Moon,
   Sun,
-  Users
+  Sparkles
 } from 'lucide-react'
 import { api } from '../lib/api'
 import { useScrapeAll, useImportExcel } from '../hooks/useInfluencers'
+import toast from 'react-hot-toast'
 
 interface HeaderProps {
   onAddClick: () => void
@@ -28,6 +30,7 @@ export function Header({ onAddClick, influencerCount }: HeaderProps) {
     document.documentElement.classList.toggle('dark', dark)
     localStorage.setItem('theme', dark ? 'dark' : 'light')
   }, [dark])
+
   const fileRef = useRef<HTMLInputElement>(null)
   const scrapeAll = useScrapeAll()
   const importExcel = useImportExcel()
@@ -38,15 +41,29 @@ export function Header({ onAddClick, influencerCount }: HeaderProps) {
 
   async function handleScrapeAll() {
     setScraping(true)
+    toast.loading('Veriler guncelleniyor...', { id: 'scrape' })
     try {
-      await scrapeAll.mutateAsync()
+      const res = await scrapeAll.mutateAsync()
+      const errCount = res.results.filter((r) => r.errors.length > 0).length
+      if (errCount > 0) {
+        toast.error(`${res.results.length - errCount} basarili, ${errCount} hatali`, { id: 'scrape' })
+      } else {
+        toast.success(`${res.results.length} influencer guncellendi`, { id: 'scrape' })
+      }
+    } catch {
+      toast.error('Guncelleme sirasinda hata olustu', { id: 'scrape' })
     } finally {
       setScraping(false)
     }
   }
 
   async function handleExport() {
-    await api.exportExcel()
+    try {
+      await api.exportExcel()
+      toast.success('Excel dosyasi indirildi')
+    } catch {
+      toast.error('Export sirasinda hata olustu')
+    }
   }
 
   function handleImportClick() {
@@ -56,36 +73,61 @@ export function Header({ onAddClick, influencerCount }: HeaderProps) {
   async function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    await importExcel.mutateAsync(file)
+    try {
+      const res = await importExcel.mutateAsync(file)
+      toast.success(`${res.imported} influencer iceri aktarildi`)
+    } catch {
+      toast.error('Import sirasinda hata olustu')
+    }
     e.target.value = ''
   }
 
   return (
-    <header className="border-b bg-white dark:bg-gray-900 px-4 py-2.5">
+    <motion.header
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+      className="glass border-b border-white/20 dark:border-white/5 px-5 py-3 relative z-20"
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-              <Users size={16} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-sm font-bold text-gray-900 dark:text-white leading-none">
-                Influencer Tracker
-              </h1>
-              <span className="text-2xs text-gray-500">
-                {influencerCount} influencer
-              </span>
-            </div>
+          <motion.div
+            whileHover={{ scale: 1.05, rotate: 2 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20"
+          >
+            <Sparkles size={18} className="text-white" />
+          </motion.div>
+          <div>
+            <h1 className="text-sm font-bold text-gray-900 dark:text-white leading-none tracking-tight">
+              Influencer Tracker
+            </h1>
+            <motion.span
+              key={influencerCount}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-[11px] text-gray-400 dark:text-gray-500 font-medium"
+            >
+              {influencerCount} influencer
+            </motion.span>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
-          <button onClick={onAddClick} className="btn-primary btn-sm" title="Yeni Ekle">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={onAddClick}
+            className="btn-primary btn-sm"
+            title="Yeni Ekle"
+          >
             <Plus size={14} />
             <span className="hidden sm:inline">Ekle</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.96 }}
             onClick={handleScrapeAll}
             disabled={scraping}
             className="btn-secondary btn-sm"
@@ -95,17 +137,29 @@ export function Header({ onAddClick, influencerCount }: HeaderProps) {
             <span className="hidden sm:inline">
               {scraping ? 'Guncelleniyor...' : 'Guncelle'}
             </span>
-          </button>
+          </motion.button>
 
-          <button onClick={handleExport} className="btn-secondary btn-sm" title="Excel Export">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={handleExport}
+            className="btn-secondary btn-sm"
+            title="Excel Export"
+          >
             <Download size={14} />
             <span className="hidden sm:inline">Export</span>
-          </button>
+          </motion.button>
 
-          <button onClick={handleImportClick} className="btn-secondary btn-sm" title="Excel Import">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={handleImportClick}
+            className="btn-secondary btn-sm"
+            title="Excel Import"
+          >
             <Upload size={14} />
             <span className="hidden sm:inline">Import</span>
-          </button>
+          </motion.button>
 
           <input
             ref={fileRef}
@@ -115,13 +169,41 @@ export function Header({ onAddClick, influencerCount }: HeaderProps) {
             onChange={handleImportFile}
           />
 
-          <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1" />
+          <div className="w-px h-5 bg-gray-200/60 dark:bg-gray-700/40 mx-1" />
 
-          <button onClick={toggleTheme} className="btn-ghost btn-sm" title="Tema Degistir">
-            {dark ? <Sun size={14} /> : <Moon size={14} />}
-          </button>
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 15 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={toggleTheme}
+            className="btn-ghost btn-sm p-1.5"
+            title="Tema Degistir"
+          >
+            <AnimatePresence mode="wait">
+              {dark ? (
+                <motion.div
+                  key="sun"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Sun size={15} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="moon"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Moon size={15} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
         </div>
       </div>
-    </header>
+    </motion.header>
   )
 }

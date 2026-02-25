@@ -16,6 +16,9 @@ function createWindow(): void {
     show: false,
     autoHideMenuBar: true,
     title: 'Influencer Tracker',
+    titleBarStyle: 'hiddenInset',
+    backgroundColor: '#0c0f1a',
+    icon: join(__dirname, '../../resources/icon.ico'),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -24,6 +27,7 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow!.show()
+    mainWindow!.focus()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

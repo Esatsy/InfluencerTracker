@@ -6,6 +6,7 @@ directories:
 files:
   - '!**/.vscode/*'
   - '!src/*'
+  - '!scripts/*'
   - '!electron.vite.config.*'
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
@@ -13,13 +14,42 @@ asarUnpack:
   - resources/**
   - node_modules/better-sqlite3/**
 win:
+  icon: resources/icon.ico
   executableName: influencer-tracker
   target:
     - target: nsis
       arch:
         - x64
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  artifactName: InfluencerTracker-Setup-${version}.${ext}
   shortcutName: Influencer Tracker
   uninstallDisplayName: Influencer Tracker
   createDesktopShortcut: always
+  createStartMenuShortcut: true
+  menuCategory: Influencer Tracker
+  installerIcon: resources/icon.ico
+  uninstallerIcon: resources/icon.ico
+  installerHeaderIcon: resources/icon.ico
+  deleteAppDataOnUninstall: false
+  runAfterFinish: true
+  installerLanguages:
+    - tr
+    - en
+mac:
+  icon: resources/icon.png
+  category: public.app-category.business
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+linux:
+  icon: resources/icon.png
+  category: Office
+  target:
+    - target: AppImage
+      arch:
+        - x64
