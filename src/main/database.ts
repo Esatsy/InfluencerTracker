@@ -112,7 +112,7 @@ export function initDatabase(): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
+      value TEXT DEFAULT ''
     )
   `)
 
@@ -138,7 +138,7 @@ export const settingsDB = {
   },
 
   set(key: string, value: unknown): void {
-    const serialized = typeof value === 'string' ? value : JSON.stringify(value)
+    const serialized = JSON.stringify(value ?? '')
     db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run(key, serialized)
   },
 
@@ -146,7 +146,8 @@ export const settingsDB = {
     const stmt = db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)')
     const tx = db.transaction((items: [string, unknown][]) => {
       for (const [key, value] of items) {
-        const serialized = typeof value === 'string' ? value : JSON.stringify(value)
+        if (value === undefined) return
+        const serialized = JSON.stringify(value ?? '')
         stmt.run(key, serialized)
       }
     })
